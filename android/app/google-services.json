@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552083144237",
+    "project_id": "getspoused-8e12d",
+    "storage_bucket": "getspoused-8e12d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552083144237:android:583fa1bed01ca6624d42a4",
+        "android_client_info": {
+          "package_name": "com.tixertech.getspoused"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUJMtITdy8JEOf-qfc3brZwrxvkwLkcns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

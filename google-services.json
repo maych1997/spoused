@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "552083144237",
+    "project_id": "getspoused-8e12d",
+    "storage_bucket": "getspoused-8e12d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552083144237:android:583fa1bed01ca6624d42a4",
+        "android_client_info": {
+          "package_name": "com.tixertech.getspoused"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "552083144237-3hu2eq242q745c1h8bbfdclri9dd4bqd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tixertech.getspoused",
+            "certificate_hash": "6d68754ff935e8080b14e9edbf60ef7f318be5a5"
+          }
+        },
+        {
+          "client_id": "552083144237-4icei23v8mouc7n7q5ps7ll4fvu4slum.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tixertech.getspoused",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "552083144237-eiulu7ti624c9g63ruou0ihversrafen.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tixertech.getspoused",
+            "certificate_hash": "3993aa8d3637d38efe471d471c011442525a837a"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUJMtITdy8JEOf-qfc3brZwrxvkwLkcns"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "552083144237-ft7aaub1g9e2b7j1e3gv6ltla4icuki8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "552083144237-m5rm1eaadoh1ns6fdmbchnl22o7k9scu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tixertech.getspoused",
+                "app_store_id": "6504262903"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
