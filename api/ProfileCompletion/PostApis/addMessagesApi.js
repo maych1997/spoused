@@ -5,7 +5,21 @@ export const addMessagesApi = async (
   content,
   receiverId,
   token,
+  senderId,
+  appId,
+  channelName,
 ) => {
+  console.log('Data::::::::::::::::::::::::::', {
+    type: type,
+    chat: chat,
+    content: content,
+    receiverId: receiverId,
+    token: token,
+    senderId: senderId,
+    appId:appId,
+    channelName:channelName,
+  });
+  
   try {
     const options = {
       Authorization: "Bearer " + token,
@@ -19,10 +33,14 @@ export const addMessagesApi = async (
         type,
         chat,
         content,
-        receiverId
+        receiverId,
+        token,
+        senderId,
+        appId,
+        channelName,
       }
     );
-    console.log(data);
+    console.log('This is my Data:::::::::::::::::::::::',data);
     return data;
   } catch (error) {
     console.log('There is error',error);
