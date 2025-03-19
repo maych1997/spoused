@@ -121,6 +121,7 @@ const ChatScreen = (props: any) => {
   const updatedMessages = useSelector((state) => state.auth.updatedMessages);
   const [image, setImage] = useState<string>("");
   const channelName = Math.random().toString(36).substring(7);
+  const [channelData,setChannelData]=useState(null);
   const chatdata = async () => {
     try {
       const res = await singleChatApi(
@@ -141,7 +142,6 @@ const ChatScreen = (props: any) => {
       console.error("Error in getting chat data", error);
     }
   };
-
   useEffect(() => {
     chatdata();
     console.log("current user", route.params.user);
@@ -537,10 +537,11 @@ const ChatScreen = (props: any) => {
         route?.params?.conversation,
         "Incoming Call",
         route?.params?.user?._id,
-        reduxState.auth.token,
+        reduxState?.auth?.token,
         reduxState?.auth?.user?.id,
         "7d46bd57ef5b4804891bddc782f52515",
-        voiceConnectionData.channel
+        reduxState?.auth?.user,
+        roomId
       );
     } catch (error) {
       console.error("Error occurred during message addition: ", error);
@@ -557,7 +558,6 @@ const ChatScreen = (props: any) => {
     //   );
     // }
   };
-
   useEffect(() => {
     setTimeout(() => {
       listViewRef?.current?.scrollToEnd({ animated: true });
@@ -981,7 +981,16 @@ const ChatScreen = (props: any) => {
       console.error("Error unmatching user:", error);
     }
   };
-
+  // useEffect(()=>{
+  //   props?.route?.params?.addEventListener('answer',()=>{
+  //     setVoiceConnectionData({
+  //       appId: "7d46bd57ef5b4804891bddc782f52515",
+  //       channel: "voice" + reduxState?.auth?.user?.id + route?.params?.user?._id,
+  //       token: null, // enter your channel token as a string
+  //     });
+  //     setVoiceCall(true);
+  //   })
+  // },[reduxState?.auth?.user?.id,route?.params?.user?._id])
   const renderItem = (item: any, index: any) => {
     const isCurrentUser = item.sender === reduxState?.auth?.user?.id;
     const messageStyle = [
@@ -994,7 +1003,6 @@ const ChatScreen = (props: any) => {
         borderRadius: 0,
       },
     ];
-
     const renderMessageContent = () => {
       switch (item.type) {
         case "image":
@@ -1085,23 +1093,10 @@ const ChatScreen = (props: any) => {
           case "link":
             return (
               <TouchableOpacity
-                onPress={() => {
-                  if (item.content.includes("voice")) {
-                    setVoiceConnectionData({
-                      appId: "7d46bd57ef5b4804891bddc782f52515",
-                      channel: item.content,
-                      token: null,
-                    });
-                    setVoiceCall(true);
-                  } else {
-                    setVideoConnectionData({
-                      appId: "7d46bd57ef5b4804891bddc782f52515",
-                      channel: item.content,
-                      token: null,
-                    });
-                    setVideoCall(true);
-                  }
-                }}
+                onPress={()=>{ 
+                pickCall(item);  
+                }
+              }
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
@@ -1285,6 +1280,7 @@ const ChatScreen = (props: any) => {
   const callbacks = {
     EndCall: () => setVideoCall(false),
   };
+
   const onHangUp = async () => {
     // Check if the sender has a proAccount
     // if (reduxState?.auth?.user?.myprofile?.proAccount) {
@@ -1333,6 +1329,24 @@ const ChatScreen = (props: any) => {
     //   );
     // }
   };
+  const pickCall=(item:any)=>{
+    if (item?.content?.includes("voice")) {
+      setVoiceConnectionData({
+        appId: "7d46bd57ef5b4804891bddc782f52515",
+        channel: item?.content,
+        token: null,
+      });
+      setVoiceCall(true);
+    } else {
+      setVideoConnectionData({
+        appId: "7d46bd57ef5b4804891bddc782f52515",
+        channel: item?.content,
+        token: null,
+      });
+      setVideoCall(true);
+    }
+  }
+
   if (videoCall)
     return (
       <AgoraUIKit

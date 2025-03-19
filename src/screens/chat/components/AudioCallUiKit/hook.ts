@@ -10,8 +10,6 @@ import {
 const useAgoraAudio = (
   appId: string,
   channelName: string,
-  ruid:string,
-  euid:string,
   token: string,
 ) => {
   const agoraEngineRef = useRef<IRtcEngine | null>(
@@ -72,9 +70,10 @@ const useAgoraAudio = (
         setMessage(`Remote user ${ruid} left`);
         setRemoteUid(null);
       });
-
-      // Join the channel
+      
       await joinChannel();
+      // Join the channel
+     
     };
 
    
@@ -122,6 +121,7 @@ const useAgoraAudio = (
       }
     }
   };
+
 
   const leaveChannel = async () => {
     if (agoraEngineRef.current) {

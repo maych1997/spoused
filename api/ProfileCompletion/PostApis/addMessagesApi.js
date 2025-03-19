@@ -7,6 +7,7 @@ export const addMessagesApi = async (
   token,
   senderId,
   appId,
+  userDetails,
   channelName,
 ) => {
   console.log('Data::::::::::::::::::::::::::', {
@@ -17,6 +18,7 @@ export const addMessagesApi = async (
     token: token,
     senderId: senderId,
     appId:appId,
+    userDetails:userDetails,
     channelName:channelName,
   });
   
@@ -37,6 +39,7 @@ export const addMessagesApi = async (
         token,
         senderId,
         appId,
+        userDetails,
         channelName,
       }
     );

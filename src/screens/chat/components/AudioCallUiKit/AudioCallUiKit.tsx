@@ -13,10 +13,10 @@ interface AudioCallUiKitProps {
   ruid: string;
   euid:string;
   token: string;
-}
+  }
 
-const AudioCallUiKit: React.FC<AudioCallUiKitProps> = ({ appId, channelName, callState, onHangUp, userImage, username,ruid,euid, token }) => {
-  const { isJoined, remoteUid, message, joinChannel, leaveChannel, isMuted, toggleMute } = useAgoraAudio(appId, channelName,ruid,euid,token);
+const AudioCallUiKit: React.FC<AudioCallUiKitProps> = ({ appId, channelName, callState, onHangUp, userImage, username,ruid,euid, token}) => {
+  const { isJoined, remoteUid, message, joinChannel, leaveChannel, isMuted, toggleMute } = useAgoraAudio(appId, channelName,token);
   const [callTime, setCallTime] = useState(0);
 
   useEffect(() => {

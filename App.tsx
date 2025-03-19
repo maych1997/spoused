@@ -1,6 +1,6 @@
 import "./global.css";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, Platform, StyleSheet, View } from "react-native";
+import { Alert, Modal, Platform, StyleSheet, View } from "react-native";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import { LogBox } from "react-native";
@@ -31,6 +31,7 @@ import usePushNotifications from "./src/Providers/usePushNotifications";
 import eventEmitter from "./src/Events/EventEmitter";
 import { rem } from "nativewind";
 import useAgoraAudio from "@/screens/chat/components/AudioCallUiKit/hook";
+import AudioCallUiKit from "@/screens/chat/components/AudioCallUiKit/AudioCallUiKit";
 
 LogBox.ignoreAllLogs(true);
 
@@ -45,6 +46,7 @@ Notifications.setNotificationHandler({
 
 export default function App() {
   const [remoteMessage,setRemoteMessage]=useState();
+  const [isVoice,setVoice]=useState(false);
   
   // const {joinChannel}=useAgoraAudio(JSON.stringify(remoteMessage?.notification?.body)?.appId,JSON.stringify(remoteMessage?.notification.body)?.channelId,JSON.stringify(remoteMessage?.notification.body)?.token);
 
@@ -150,19 +152,19 @@ export default function App() {
           trigger: null,
         });
       }else{
-        console.log('I am remote Message;:::::::::::::::::::',remoteMessage);
+        console.log('I am remote Message;:::::::::::::::::::',JSON.parse(remoteMessage.notification.body).userDetails.myprofile.photos[0]);
 
         CallNotify(remoteMessage);
       }
     };
 
-    // const handleAnswer = async () => {
-    //   await joinChannel();
-    // };
+    const handleAnswer = async () => {
+      setVoice(!isVoice);
+    };
 
 
     // // Listen for call answer event
-    // RNNotificationCall.addEventListener("answer", handleAnswer);
+    RNNotificationCall.addEventListener("answer", handleAnswer);
 
     requestUserPermission();
     const unsubscribe = messaging().onMessage(handlePushNotification);
@@ -177,6 +179,7 @@ export default function App() {
 
   const CallNotify=(remoteMessage)=>{
     setRemoteMessage(remoteMessage);
+    
     RNNotificationCall.displayNotification(
       '22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad',
       null,
@@ -185,8 +188,8 @@ export default function App() {
         channelId: JSON.parse(remoteMessage.notification.body).channelName,
         channelName: JSON.parse(remoteMessage.notification.body).channelName.includes('voice')?'Incoming Audio Call':'Incoming Video Call',
         notificationIcon: 'ic_launcher', // mipmap
-        notificationTitle: 'Linh Vo',
-        notificationBody: 'Incoming Audio call',
+        notificationTitle: JSON.parse(remoteMessage.notification.body).userDetails.fullName,
+        notificationBody: JSON.parse(remoteMessage.notification.body).channelName.includes('voice')?'Incoming Audio call':'Incoming Video Call',
         answerText: 'Answer',
         declineText: 'Decline',
         notificationColor: 'colorAccent',
@@ -197,8 +200,19 @@ export default function App() {
       }
     );
   }
-
+  const onHangUp=()=>{
+    setVoice(!isVoice);
+  }
   return (
+    <>
+    {isVoice? <Modal visible={isVoice} animationType="slide"><AudioCallUiKit
+        username={JSON.parse(remoteMessage.notification.body).userDetails.fullName}
+        userImage={JSON.parse(remoteMessage.notification.body).userDetails.myprofile.photos[0]}
+        appId={JSON.parse(remoteMessage.notification.body).appId}
+        callState={isVoice}
+        channelName={JSON.parse(remoteMessage.notification.body).channelName}
+        onHangUp={onHangUp}
+      /></Modal>:<></>}
     <RevenueCatProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
@@ -216,5 +230,6 @@ export default function App() {
         </SafeAreaProvider>
       </GestureHandlerRootView>
     </RevenueCatProvider>
+    </>
   );
 }
