@@ -65,7 +65,7 @@ const ChatOverview = (props: any) => {
             });
     }, []);
 
-    async  function fetchImageAsBase64(url) {
+    async function fetchImageAsBase64(url) {
         try {
             const response = await fetch(url);
             const blob = await response.blob();
@@ -78,10 +78,10 @@ const ChatOverview = (props: any) => {
                 };
 
                 reader.onloadend = () => {
-                    resolve(reader.result.split(',')[1]); // Get base64 part after comma
+                    resolve(reader?.result?.split(',')[1]); // Get base64 part after comma
                 };
 
-                reader.readAsDataURL(blob); // Convert blob to base64
+                reader?.readAsDataURL(blob); // Convert blob to base64
             });
         } catch (error) {
             console.error("Error fetching image:", error);
@@ -95,10 +95,10 @@ const ChatOverview = (props: any) => {
         setBlur(props?.user?.users?.photoPrivacy);
         if (imageHelper) {
 
-            setImage(imageHelper.base64);
+            setImage(imageHelper?.base64);
             // setImage(props.user.users.photos[0]);
         }else {
-            setImage(props.user.users.photos[0]);
+            setImage(props?.user?.users?.photos[0]);
         }
 
         if (chatData.length > 0) {

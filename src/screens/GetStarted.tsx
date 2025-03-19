@@ -211,11 +211,11 @@ const GetStarted = (props: any) => {
       <View className="flex my-5">
         <Text
           onPress={() => {
-            if(!locationGranted){
-              Alert.alert("Location Access", "Please enable location access to use the app.");
-            }else{
+            // if(!locationGranted){
+            //   Alert.alert("Location Access", "Please enable location access to use the app.");
+            // }else{
               navigation.navigate('SignIn');
-            }
+            // }
           }}
           className="underline font-semibold text-center"
         >

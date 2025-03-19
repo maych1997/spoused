@@ -6,12 +6,11 @@ import {
   ClientRoleType,
   IRtcEngine,
 } from "react-native-agora";
+
 const useAgoraAudio = (
   appId: string,
   channelName: string,
   token: string,
-  ruid: string,
-  euid: string
 ) => {
   const agoraEngineRef = useRef<IRtcEngine | null>(
     null
@@ -20,7 +19,7 @@ const useAgoraAudio = (
   const [remoteUid, setRemoteUid] = useState<number | null>(null);
   const [message, setMessage] = useState<string>("");
   const [isMuted, setMuted] = useState(false);
-
+  
   useEffect(() => {
     const setupAgora = async () => {
       if (Platform.OS === "android") {
@@ -71,9 +70,10 @@ const useAgoraAudio = (
         setMessage(`Remote user ${ruid} left`);
         setRemoteUid(null);
       });
-
-      // Join the channel
+      
       await joinChannel();
+      // Join the channel
+     
     };
 
    
@@ -121,6 +121,7 @@ const useAgoraAudio = (
       }
     }
   };
+
 
   const leaveChannel = async () => {
     if (agoraEngineRef.current) {
