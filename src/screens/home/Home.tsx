@@ -92,9 +92,11 @@ const Home = (props) => {
   const handleTouchEnd = (e) => {
     setTouchEnd(e.nativeEvent.pageY);
     if (Math.abs(touchStart - e.nativeEvent.pageY) < 10) {
-      props.navigation.navigate("UserDetail", {
-        user_id: users[currentIndex]?._id,
-      });
+      if(users.length>0){
+        props.navigation.navigate("UserDetail", {
+          user_id: users[currentIndex]?._id,
+        });
+      } 
     }
   };
 
@@ -182,43 +184,69 @@ const Home = (props) => {
     }
   };
   // TODO SEPERATE
+  // const fetchData = async () => {
+  //   try {
+  //     const response = await getUserMatchesApi(reduxState?.auth?.token);
+  //     // let response;
+  //     if (reduxState.auth.userMatches.length == !0) {
+  //       // console.log("this is the data for the first time");
+  //       // console.log(reduxState.auth.userMatches);
+  //       // console.log(reduxState.auth.userMatches.length);
+  //       // console.log("------------------------------------");
+  //       response = await reduxState.auth.userMatches;
+  //       dispatch(setUserMatches([]));
+  //     } else {
+  //       // console.log("this is after the first time after the filtering");
+  //       // response = await getUserMatchesApi(reduxState.auth.token);
+  //       // console.log('Test',response);
+  //       // console.log('Test',reduxState.auth.userMatches.length);
+  //       // console.log("-------------------------------------------------");
+  //     }
+  //     // response = await reduxState.auth.userMatches;
+  //     //   console.log("this is the data");
+  //     //   console.log('Test',response);
+
+  //     //   console.log("this is the data");
+  //     setMyCoordinates(
+  //       reduxState?.auth?.user?.myprofile?.locationCoordinates?.coordinates
+  //     );
+  //     setUsers(response);
+  //   } catch (error) {
+  //     console.error("Error fetching user matches:", error);
+  //   }
+  // };
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchData();
+  //   }, [])
+  // );
+
   const fetchData = async () => {
     try {
-      const response = await getUserMatchesApi(reduxState.auth.token);
-      // let response;
-      if (reduxState.auth.userMatches.length == !0) {
-        // console.log("this is the data for the first time");
-        // console.log(reduxState.auth.userMatches);
-        // console.log(reduxState.auth.userMatches.length);
-        // console.log("------------------------------------");
-        response = await reduxState.auth.userMatches;
-        dispatch(setUserMatches([]));
-      } else {
-        // console.log("this is after the first time after the filtering");
-        // response = await getUserMatchesApi(reduxState.auth.token);
-        // console.log('Test',response);
-        // console.log('Test',reduxState.auth.userMatches.length);
-        // console.log("-------------------------------------------------");
-      }
-      // response = await reduxState.auth.userMatches;
-      //   console.log("this is the data");
-      //   console.log('Test',response);
-
-      //   console.log("this is the data");
-      setMyCoordinates(
-        reduxState?.auth?.user?.myprofile?.locationCoordinates?.coordinates
-      );
-      setUsers(response);
+        let response = await getUserMatchesApi(reduxState?.auth?.token);
+      
+        if (reduxState.auth.userMatches.length !== 0) {
+            response = reduxState.auth.userMatches;
+            dispatch(setUserMatches([]));
+        }
+      
+        setMyCoordinates(
+            reduxState?.auth?.user?.myprofile?.locationCoordinates?.coordinates
+        );
+        setUsers(response);
     } catch (error) {
-      console.error("Error fetching user matches:", error);
+        console.error("Error fetching user matches:", error);
     }
-  };
+};
 
-  useFocusEffect(
+useFocusEffect(
     useCallback(() => {
-      fetchData();
+        fetchData();
     }, [])
-  );
+);
+
+
   const handlAllSwiped = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
