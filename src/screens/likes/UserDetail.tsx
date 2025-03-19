@@ -540,7 +540,7 @@ const UserDetail = (props) => {
                                     fontSize: 14,
                                 }}
                             >
-                                {(profileData as { education: string }).education}
+                                {(profileData as { education: string })?.education}
                             </Text>
                         </View>
                     </View>

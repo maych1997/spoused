@@ -62,27 +62,31 @@ const Likes = (props) => {
     const [refreshing, setRefreshing] = useState(false);
     const [imageProfile, setImageProfile] = useState([]);
     const [count, setCount] = useState(0);
-    const fetchData = async () => {
-
-
+    const fetchData = React.useCallback(async () => {
         console.log("Fetching data...");
         try {
             const response = await getLikedMatchesApi(reduxState.auth.token);
             if (response.users) {
                 setProfileData(response.users);
                 setCount(response.count);
-                setRefreshing(false);
             }
         } catch (error) {
             console.error("Error fetching profile data:", error);
+        } finally {
+            setRefreshing(false);
         }
-    };
-
-
+    }, [reduxState.auth.token]); // Dependency array ensures it only changes when the token changes
+    
     const onRefresh = React.useCallback(() => {
         setRefreshing(true);
         fetchData();
-    }, []);
+    }, [fetchData]); // Ensures `onRefresh` remains stable
+    
+    // Call fetchData only once when the component mounts
+    React.useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+    
 
     async function fetchImageAsBase64(url) {
         try {
