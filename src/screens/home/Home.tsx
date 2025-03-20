@@ -90,8 +90,15 @@ const Home = (props) => {
   };
 
   const handleTouchEnd = (e) => {
-    setTouchEnd(e.nativeEvent.pageY);
-    if (Math.abs(touchStart - e.nativeEvent.pageY) < 10) {
+    // setTouchEnd(e.nativeEvent.pageY);
+    // if (Math.abs(touchStart - e.nativeEvent.pageY) < 10) {
+    //   if (users.length > 0) {
+    //     props.navigation.navigate("UserDetail", {
+    //       user_id: users[currentIndex]?._id,
+    //     });
+    //   }
+    // }
+    if (users.length > 0) {
       props.navigation.navigate("UserDetail", {
         user_id: users[currentIndex]?._id,
       });
@@ -181,30 +188,17 @@ const Home = (props) => {
       return `${roundedDistance} miles away`;
     }
   };
-  // TODO SEPERATE
+
+
   const fetchData = async () => {
     try {
-      const response = await getUserMatchesApi(reduxState.auth.token);
-      // let response;
-      if (reduxState.auth.userMatches.length == !0) {
-        // console.log("this is the data for the first time");
-        // console.log(reduxState.auth.userMatches);
-        // console.log(reduxState.auth.userMatches.length);
-        // console.log("------------------------------------");
-        response = await reduxState.auth.userMatches;
-        dispatch(setUserMatches([]));
-      } else {
-        // console.log("this is after the first time after the filtering");
-        // response = await getUserMatchesApi(reduxState.auth.token);
-        // console.log('Test',response);
-        // console.log('Test',reduxState.auth.userMatches.length);
-        // console.log("-------------------------------------------------");
-      }
-      // response = await reduxState.auth.userMatches;
-      //   console.log("this is the data");
-      //   console.log('Test',response);
+      let response = await getUserMatchesApi(reduxState?.auth?.token);
 
-      //   console.log("this is the data");
+      if (reduxState.auth.userMatches.length !== 0) {
+        response = reduxState.auth.userMatches;
+        dispatch(setUserMatches([]));
+      }
+
       setMyCoordinates(
         reduxState?.auth?.user?.myprofile?.locationCoordinates?.coordinates
       );
@@ -219,6 +213,7 @@ const Home = (props) => {
       fetchData();
     }, [])
   );
+
   const handlAllSwiped = async () => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -235,18 +230,18 @@ const Home = (props) => {
       {
         text: "NO",
         onPress: () => null,
-        style: "cancel"
+        style: "cancel",
       },
-      { text: "YES", onPress: () => BackHandler.exitApp() }
+      { text: "YES", onPress: () => BackHandler.exitApp() },
     ]);
     return true;
   };
-  
+
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", backAction);
-  return () => {
-    BackHandler.removeEventListener("hardwareBackPress", backAction);
-  }   
+    return () => {
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+    };
   }, []);
   const handleSwipeRight = async (id) => {
     if (reduxState?.auth?.user?.myprofile?.likes === 0) {
@@ -348,7 +343,8 @@ const Home = (props) => {
     });
   };
 
-  const handleInstantChat = async () => {
+  const handleInstantChat = async (event) => {
+    event.stopPropagation();
     try {
       const res = await instantChatApi(
         users[currentIndex]?._id,
@@ -356,11 +352,11 @@ const Home = (props) => {
       );
       console.log(res);
       // if (res.success) {
-        dispatch(updatemyprofile(res?.user));
-        props.navigation.navigate("ChatScreen", {
-          user: res?.swipedUser,
-          conversation: res?.chat?._id,
-        });
+      dispatch(updatemyprofile(res?.user));
+      props.navigation.navigate("ChatScreen", {
+        user: res?.swipedUser,
+        conversation: res?.chat?._id,
+      });
       // } else {
       //   props.navigation.navigate("PremiumPlan");
       // }
@@ -368,7 +364,6 @@ const Home = (props) => {
       console.error("Error instant chat:", error);
     }
   };
-
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView
@@ -384,12 +379,15 @@ const Home = (props) => {
           notificationHandler={() => props.navigation.navigate("Notifications")}
           filterHandler={() => props.navigation.navigate("Filters")}
         />
-        <View  onTouchStart={(e) => {
-          handleTouchStart(e);
-        }}
-        onTouchEnd={(e) => {
-          handleTouchEnd(e);
-        }}>
+        {/* <View
+          style={{ position: "absolute", zIndex: -1 }}
+          onTouchStart={(e) => {
+            handleTouchStart(e);
+          }}
+          onTouchEnd={(e) => {
+            handleTouchEnd(e);
+          }}
+        > */}
           {users?.length > 0 ? (
             <View
               style={{
@@ -401,6 +399,7 @@ const Home = (props) => {
               }}
             >
               <Swiper
+                onTapCard={handleTouchEnd}
                 ref={swiperRef}
                 cards={users}
                 backgroundColor="transparent"
@@ -408,6 +407,7 @@ const Home = (props) => {
                   user && (
                     // TODO REUSABLE
                     <ImageBackground
+                      
                       imageStyle={{ borderRadius: 20, overflow: "hidden" }}
                       source={{ uri: user.photos && user.photos[0] }} // Check if photos exist
                       key={index}
@@ -540,10 +540,25 @@ const Home = (props) => {
                                     user?.locationCoordinates?.coordinates[0],
                                     user?.locationCoordinates?.coordinates[1]
                                   )}
-
                               </Text>
                             </View>
                           </View>
+                          {users?.length > 0 ? (
+                            <TouchableOpacity
+                              style={styles.iconContainer}
+                              onPress={(event) => {
+                                handleInstantChat(event); // Handle message click
+                              }}
+                            >
+                              <MaterialCommunityIcons
+                                name="message-text"
+                                size={24}
+                                color={AppColors.whiteColor}
+                              />
+                            </TouchableOpacity>
+                          ) : (
+                            <></>
+                          )}
                         </View>
                       )}
                     </ImageBackground>
@@ -668,20 +683,7 @@ const Home = (props) => {
               </View>
             </View>
           )}
-        </View>
-        {users?.length>0?<TouchableOpacity
-          style={styles.iconContainer}
-          onPress={(event) => {
-
-            handleInstantChat(); // Handle message click
-          }}
-        >
-          <MaterialCommunityIcons
-            name="message-text"
-            size={24}
-            color={AppColors.whiteColor}
-          />
-        </TouchableOpacity>:<></>}
+        {/* </View> */}
       </ScrollView>
 
       <SubscriptionModal openModal={openModal} setOpenModal={setOpenModal} />
@@ -712,9 +714,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     position: "absolute",
-    zIndex:1,
-    bottom:150,
-    right:60,
+    zIndex: 1,
+    bottom: 25,
+    right: 20,
   },
   contentContainer: {
     width: "90%",

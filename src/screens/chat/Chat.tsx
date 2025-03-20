@@ -46,7 +46,8 @@ const Likes = (props: any) => {
       const response = await getAllChatsApi(
         reduxState.auth.token,
       );
-
+      console.log('The current user:::::::::::::::',reduxState.auth.user);
+      console.log('beerbal',response);
       setChats(response);
       setSearchedChats(response);
 
@@ -61,8 +62,8 @@ const Likes = (props: any) => {
       setSearchedChats(chats);
       return;
     }
-    const filteredChats = chats.filter((chat) => {
-      return chat.users.fullName?.toLowerCase().includes(text?.toLowerCase());
+    const filteredChats = chats?.filter((chat) => {
+      return chat?.users?.fullName?.toLowerCase().includes(text?.toLowerCase());
     });
 
     setSearchedChats(filteredChats);
