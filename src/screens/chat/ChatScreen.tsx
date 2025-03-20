@@ -958,7 +958,7 @@ const ChatScreen = (props: any) => {
 
       if (res.success) {
         setOpenBlockMenu(false);
-        props.navigation.navigate("Tab");
+        props.navigation.navigate("Tab", { screen: "Chat" });
       }
     } catch (error) {
       console.error("Error blocking user:", error);

@@ -43,6 +43,8 @@ export const request = async (
 
     try {
       data = JSON.parse(text); // Attempt to parse response as JSON
+      console.log('This is my response beta',data);
+
     } catch (err) {
       console.error("Failed to parse response as JSON:", text);
       throw new SyntaxError("Response is not valid JSON");
