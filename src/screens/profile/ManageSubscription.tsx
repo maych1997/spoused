@@ -23,7 +23,7 @@ import Header from "../../components/common/Header";
 import globalStyles from "../../styles/globalStyles";
 
 const ManageSubscription = (props: any) => {
-  useFonts({
+  useFonts({ 
     Poppins_100Thin,
     Poppins_300Light,
     Poppins_400Regular,
