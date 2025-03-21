@@ -64,9 +64,9 @@ const Likes = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [imageProfile, setImageProfile] = useState([]);
   const [count, setCount] = useState(0);
-  const [swiped,setSwiped]=useState(false);
+  const [swiped, setSwiped] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   const fetchData = React.useCallback(async () => {
     console.log("Fetching data...");
     try {
@@ -137,40 +137,54 @@ const Likes = (props) => {
   };
 
   const handleSwipeRight = async (id) => {
-    if (reduxState?.auth?.user?.myprofile?.likes === 0) {
-      props.navigation.navigate("PremiumPlan", { back: 16 });
-      return;
-    }
+    // if (reduxState?.auth?.user?.myprofile?.likes === 0) {
+    //   props.navigation.navigate("PremiumPlan", { back: 16 });
+    //   return;
+    // }
 
     try {
-      const res = await saveSwipesApi(id, "like", reduxState.auth.token);
-
-      setSwiped(true);
-      dispatch(updatemyprofile(res.user));
-      setCurrentIndex(currentIndex + 1);
+      const res = await saveSwipesApi(id, "dislike", reduxState.auth.token);
+      console.log("I dislikesss:::::::::::::::::::::::::", res);
+      if (res.message == "No more likes left") {
+        setSwiped(false);
+        setCurrentIndex(currentIndex);
+      } else {
+        setSwiped(true);
+        fetchData();
+        dispatch(updatemyprofile(res.user));
+        setCurrentIndex(currentIndex + 1);
+      }
     } catch (error) {
       console.log("ok is it in the catch line 191");
 
       console.error("Error saving right swipe:", error);
     }
+    console.log("I got to right");
   };
 
   const handleSwipeLeft = async (id) => {
-      if (reduxState?.auth?.user?.myprofile?.likes === 0) {
-        // swiperRef.current?.swipeBack();
-        props.navigation.navigate("PremiumPlan", { back: 16 });
-        // setOpenModal(true);
-        return;
-      }
-      try {
-        const res = await saveSwipesApi(id, "dislike", reduxState.auth.token);
+    //   if (reduxState?.auth?.user?.myprofile?.likes === 0) {
+    //     // swiperRef.current?.swipeBack();
+    //     props.navigation.navigate("PremiumPlan", { back: 16 });
+    //     // setOpenModal(true);
+    //     return;
+    //   }
+    try {
+      const res = await saveSwipesApi(id, "like", reduxState.auth.token);
+      if (res.message == "No more likes left") {
+        setSwiped(false);
+        setCurrentIndex(currentIndex);
+      } else {
         setSwiped(true);
+        fetchData();
         dispatch(updatemyprofile(res.user));
         setCurrentIndex(currentIndex + 1);
-      } catch (error) {
-        console.log("error in the catch line211");
-        console.error("Error saving left swipe:", error);
       }
+    } catch (error) {
+      console.log("error in the catch line211");
+      console.error("Error saving left swipe:", error);
+    }
+    console.log("I got to left");
   };
 
   const renderRightActions = (progress, dragX) => {

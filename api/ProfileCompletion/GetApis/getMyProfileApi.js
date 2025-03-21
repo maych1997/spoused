@@ -10,6 +10,7 @@ export const getMyProfileApi = async (token, coordinates) => {
       coordinates, 
     };
     const data = await request(`/api/v1/profile/me`, "PATCH", options, payload);
+    console.log('This is my data::::::::::::::::::::::::::::::::',data);
     return data;
   } catch (error) {
     console.error("Error fetching and updating profile data:", error);
