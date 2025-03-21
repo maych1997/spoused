@@ -244,40 +244,47 @@ const Home = (props) => {
     };
   }, []);
   const handleSwipeRight = async (id) => {
-    if (reduxState?.auth?.user?.myprofile?.likes === 0) {
-      swiperRef.current?.swipeBack();
-      props.navigation.navigate("PremiumPlan", { back: 16 });
-      // setOpenModal(true);
-      return;
-    }
+    // if (reduxState?.auth?.user?.myprofile?.likes === 0) {
+    //   swiperRef.current?.swipeBack();
+    //   props.navigation.navigate("PremiumPlan", { back: 16 });
+    //   // setOpenModal(true);
+    //   return;
+    // }
 
     try {
       const res = await saveSwipesApi(id, "like", reduxState.auth.token);
-
-      setSwiped(true);
-      dispatch(updatemyprofile(res.user));
-      setCurrentIndex(currentIndex + 1);
+      if(res.message=='No more likes left'){
+        setSwiped(false);
+        setCurrentIndex(currentIndex);
+      }else{
+        setSwiped(true);
+        dispatch(updatemyprofile(res.user));
+        setCurrentIndex(currentIndex + 1);
+      }
     } catch (error) {
       console.log("ok is it in the catch line 191");
-
       console.error("Error saving right swipe:", error);
     }
   };
 
   const handleSwipeLeft = async (id) => {
-    if (reduxState?.auth?.user?.myprofile?.likes === 0) {
-      swiperRef.current?.swipeBack();
-      props.navigation.navigate("PremiumPlan", { back: 16 });
-      // setOpenModal(true);
-      return;
-    }
+    // if (reduxState?.auth?.user?.myprofile?.likes === 0) {
+    //   swiperRef.current?.swipeBack();
+    //   props.navigation.navigate("PremiumPlan", { back: 16 });
+    //   // setOpenModal(true);
+    //   return;
+    // }
 
     try {
       const res = await saveSwipesApi(id, "dislike", reduxState.auth.token);
-
-      setSwiped(true);
-      dispatch(updatemyprofile(res.user));
-      setCurrentIndex(currentIndex + 1);
+      if(res.message=='No more likes left'){
+        setSwiped(false);
+        setCurrentIndex(currentIndex);
+      }else{
+        setSwiped(true);
+        dispatch(updatemyprofile(res.user));
+        setCurrentIndex(currentIndex + 1);
+      }
     } catch (error) {
       console.log("error in the catch line211");
 
@@ -564,8 +571,8 @@ const Home = (props) => {
                     </ImageBackground>
                   )
                 }
-                onSwipedLeft={() => handleSwipeLeft(users[currentIndex]._id)}
-                onSwipedRight={() => handleSwipeRight(users[currentIndex]._id)}
+                onSwipedLeft={() => handleSwipeLeft(users[currentIndex]?._id)}
+                onSwipedRight={() => handleSwipeRight(users[currentIndex]?._id)}
                 onSwipedAll={handlAllSwiped}
                 cardIndex={0}
                 stackSize={3}

@@ -45,11 +45,11 @@ const SignIn = (props: any) => {
   const [coordinates, setCoordinates] = useState<number[]>([0, 0]);
   const [fcm, setFcm] = useState<string | null>(null);
 
-  useEffect(() => {
-    Location.getCurrentPositionAsync({}).then((location) => {
-      setCoordinates([location.coords.latitude, location.coords.longitude]);
-    });
-  }, []);
+  // useEffect(() => {
+  //   Location.getCurrentPositionAsync({}).then((location) => {
+  //     setCoordinates([location.coords.latitude, location.coords.longitude]);
+  //   });
+  // }, []);
 
   const requestUserPermission = async () => {
     const authStatus = await messaging().requestPermission();
@@ -88,7 +88,7 @@ const SignIn = (props: any) => {
     try {
       setLoading(true);
       // const data = await loginApi(email, password, coordinates, fcm);
-      const data = await loginApi(email, password, [51.5074, 0.1278], fcm);
+      const data = await loginApi(email, password, [0.1278, 51.5074], fcm);
 
       if (data.success) {
         if (!data.user.isEmailVerified) {
@@ -101,6 +101,7 @@ const SignIn = (props: any) => {
         dispatch(login(data));
         try {
           const response = await getMyProfileApi(data.user.id, coordinates);
+          console.log('This is my Profile Data:::::::::::::::::::::::::::::',response);
           dispatch(updatemyprofile(response.data));
 
           if (!data?.user?.generalInfoCompleted) {

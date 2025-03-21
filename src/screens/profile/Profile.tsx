@@ -42,6 +42,7 @@ const Profile = (props: any) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log('This is Profile Data::::::::::::::::::::::::',reduxState?.auth?.user)
     setProfileData(reduxState?.auth?.user?.myprofile);
   }, [reduxState?.auth?.user?.myprofile]);
 
@@ -71,18 +72,18 @@ const Profile = (props: any) => {
           viewProfileHandler={() => props.navigation.navigate("ViewProfile")}
           boostingHandler={() => props.navigation.navigate("Boosting",{back: 11})}
           fullName={
-            profileData && (profileData as { fullName: string }).fullName
-              ? (profileData as { fullName: string }).fullName
+            profileData && (profileData as { fullName: string })?.fullName
+              ? (profileData as { fullName: string })?.fullName
               : ""
           }
           imgPath={
             (profileData as { photos: string[] })?.photos
-              ? (profileData as { photos: string[] }).photos[0]
+              ? (profileData as { photos: string[] })?.photos[0]
               : null
           }
           isVerified={
-            profileData && (profileData as { isVerified: boolean }).isVerified
-              ? (profileData as { isVerified: boolean }).isVerified
+            profileData && (profileData as { isVerified: boolean })?.isVerified
+              ? (profileData as { isVerified: boolean })?.isVerified
               : false
           }
         />
