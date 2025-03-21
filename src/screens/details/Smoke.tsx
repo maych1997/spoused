@@ -108,14 +108,8 @@ const Smoke = (props: any) => {
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView style={{ padding: 5 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-          style={{ position: "absolute", left: 0 }}
-        />
         <Question
+          backHandler={backHandler}
           setSelected={setSelectedSmoker}
           heading="Do You Smoke?"
           options={back === 2 ? ["No Preference", "Yes", "No"] : ["Yes", "No"]}

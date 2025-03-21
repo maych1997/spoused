@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, Text, View, KeyboardAvoidingView, Alert } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  Alert,
+} from "react-native";
 import {
   useFonts,
   Poppins_100Thin,
@@ -21,7 +28,7 @@ import { updateNameApi } from "../../../api/ProfileCompletion/PutApis/updateProf
 import { useSelector, useDispatch } from "react-redux";
 import { updatemyprofile } from "../../../redux/authSlice";
 import Toast from "react-native-toast-message";
-import {useInfoModal} from "@/context/ModalContext";
+import { useInfoModal } from "@/context/ModalContext";
 
 interface RouteParams {
   back: number;
@@ -49,28 +56,25 @@ const Name = (props: any) => {
   }, []);
 
   const showToast = (title: string, message: string) => {
-
     Toast.show({
-      type: 'error',
-      position: 'bottom',
+      type: "error",
+      position: "bottom",
       text1: title,
       text2: message,
       visibilityTime: 3500,
       autoHide: true,
       bottomOffset: 40,
     });
-  }
-
+  };
 
   const updateDetails = async () => {
+    const newFullName = fullName; // Replace this with the new full name
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(newFullName) || newFullName.length < 2) {
+      openModal("Oops!", "Please enter a valid name ", "Try Again", "error");
 
-      const newFullName = fullName; // Replace this with the new full name
-      const nameRegex = /^[A-Za-z\s]+$/;
-      if (!nameRegex.test(newFullName) || newFullName.length < 2) {
-        openModal("Oops!","Please enter a valid name ", "Try Again", "error");
-
-        return;
-      }
+      return;
+    }
 
     try {
       const response = await updateNameApi(
@@ -80,28 +84,30 @@ const Name = (props: any) => {
 
       if (!response.success) {
         Alert.alert("Try Again", "Something went wrong. Please try again.");
-        return
+        return;
       }
 
       if (response.success) {
         dispatch(updatemyprofile(response.user));
         if (back === 0) {
-          console.log("this is the one")
+          console.log("this is the one");
           props.navigation.navigate("ViewProfile");
-          openModal("Changes Saved!", "Settings saved successfully", "Okay", "success");
-
+          openModal(
+            "Changes Saved!",
+            "Settings saved successfully",
+            "Okay",
+            "success"
+          );
         } else if (back === 1) {
           props.navigation.navigate("Settings");
         } else if (back === 2) {
           props.navigation.navigate("Tab", { screen: "Filters" });
         }
       }
-
     } catch (error) {
       console.error("Error fetching user matches:", error);
     }
   };
-
 
   const backHandler = () => {
     if (back === 0) {
@@ -133,23 +139,24 @@ const Name = (props: any) => {
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
         <View style={{ padding: 15 }}>
-          <Ionicons
-            name="chevron-back"
-            size={34}
-            onPress={backHandler}
-            color="black"
-            style={{ position: "absolute", left: 0 }}
-          />
           <View style={styles.contentWrapper}>
-            <Text
-              style={{
-                fontFamily: "Poppins_700Bold",
-                fontSize: 24,
-                color: AppColors.blackColor,
-              }}
-            >
-              Full Name
-            </Text>
+            <View style={{display:'flex',flexDirection:'row',gap:10}}>
+              <Ionicons
+                name="chevron-back"
+                size={34}
+                onPress={backHandler}
+                color="black"
+              />
+              <Text
+                style={{
+                  fontFamily: "Poppins_700Bold",
+                  fontSize: 24,
+                  color: AppColors.blackColor,
+                }}
+              >
+                Full Name
+              </Text>
+            </View>
             <InputField
               label="Enter full name."
               placeholder="Write Here"

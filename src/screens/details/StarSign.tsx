@@ -120,14 +120,8 @@ const StarSign = (props: any) => {
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView style={{ padding: 5 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-          style={{ position: "absolute", left: 0 }}
-        />
         <Question
+          backHandler={backHandler}
           data={star}
           options={back === 2 ? starForFilter(star) : removeAny(star)}
           setSelected={setSelectedStar}
