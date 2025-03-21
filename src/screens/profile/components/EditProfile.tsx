@@ -77,6 +77,12 @@ const EditProfile = (props: any) => {
   const [audioChanged, setAudioChanged] = useState(false);
   const [playbackStatus, setPlaybackStatus] = useState({});
   const [localAudio, setLocalAudio] = useState(false);
+  const [timer, setTimer] = useState(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  const [playbackDuration, setPlaybackDuration] = useState(0);
+
+
+
   const { openModal } = useInfoModal();
 
   useEffect(() => {
@@ -299,45 +305,128 @@ const EditProfile = (props: any) => {
 
   const startRecording = async () => {
     try {
-      await Audio.requestPermissionsAsync();
+      // Request microphone permissions
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== "granted") {
+        console.error("Permission to access microphone denied");
+        return;
+      }
+  
+      // Set audio mode for recording
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
+        staysActiveInBackground: true,
+        shouldDuckAndroid: false,
       });
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
+  
+      // Create a new recording instance
+      const newRecording = new Audio.Recording();
+  
+      // Define high-quality recording options
+      const recordingOptions = {
+        isMeteringEnabled: true,
+        android: {
+          extension: ".m4a",
+          outputFormat: Audio.RecordingOptionsPresets.HIGH_QUALITY.android.outputFormat,
+          audioEncoder: Audio.RecordingOptionsPresets.HIGH_QUALITY.android.audioEncoder,
+          sampleRate: 44100,
+          numberOfChannels: 2,
+          bitRate: 128000,
+        },
+        ios: {
+          extension: ".m4a",
+          outputFormat: Audio.RecordingOptionsPresets.HIGH_QUALITY.ios.outputFormat,
+          audioQuality: Audio.RecordingOptionsPresets.HIGH_QUALITY.ios.audioQuality,
+          sampleRate: 44100,
+          numberOfChannels: 2,
+          bitRate: 128000,
+        },
+      };
+  
+      // Prepare and start recording
+      await newRecording.prepareToRecordAsync(recordingOptions);
+      await newRecording.startAsync();
+  
       setAudioChanged(true);
-      setRecording(recording);
+      setRecording(newRecording);
+
+      setRecordingDuration(0);
+      const interval = setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+      setTimer(interval);
+
     } catch (err) {
       console.error("Failed to start recording", err);
     }
   };
-
+  
   const stopRecording = async () => {
-    setRecording(undefined);
-    await recording.stopAndUnloadAsync();
-    const uri = recording.getURI();
-    setRecordedURI(uri);
-    setLocalAudio(true);
-  };
+    try {
+      if (!recording) return;
 
-  const playSound = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      { uri: recordedURI },
-      { shouldPlay: true }
-    );
-    setSound(sound);
-    setIsPlaying(true);
-    await sound.playAsync();
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
+      setRecordedURI(uri);
+      setLocalAudio(true);
+      setRecording(null); // Reset after stopping
 
-    sound.setOnPlaybackStatusUpdate((status) => {
-      setPlaybackStatus(status);
-      if (status.didJustFinish) {
-        setIsPlaying(false);
+      // Stop timer
+      if (timer) {
+        clearInterval(timer);
+        setTimer(null);
       }
-    });
+    } catch (err) {
+      console.error("Failed to stop recording", err);
+    }
   };
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+  const playSound = async () => {
+    try {
+      if (!recordedURI) return;
+
+      if (sound) {
+        await sound.unloadAsync();
+        setSound(null);
+      }
+
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        { uri: recordedURI },
+        { shouldPlay: true }
+      );
+
+      setSound(newSound);
+      setIsPlaying(true);
+      setPlaybackDuration(0); // Reset playback time
+
+      const interval = setInterval(() => {
+        setPlaybackDuration((prev) => prev + 1);
+      }, 1000);
+
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.positionMillis) {
+          setPlaybackDuration(Math.floor(status.positionMillis / 1000));
+        }
+        setPlaybackStatus(status);
+        if (status.didJustFinish) {
+          clearInterval(interval);
+          setPlaybackDuration(0);
+          setIsPlaying(false);
+        }
+      });
+
+      await newSound.playAsync();
+    } catch (err) {
+      console.error("Error playing sound:", err);
+    }
+  };
+
 
   const pauseSound = async () => {
     if (sound) {
@@ -664,7 +753,10 @@ const EditProfile = (props: any) => {
             ? "Stop Recording"
             : "Record Your Intro"}
         </Text>
+        <View style={{display:'flex',flexDirection:'row',gap:10,alignItems:'center'}}>
+        <Text style={{display:recording?'flex':'none'}}>{formatTime(recordingDuration)}</Text>
         <FontAwesome name="microphone" size={24} color="black" />
+        </View>
       </TouchableOpacity>
 
       {recordedURI && !recording && audioChanged && (
@@ -672,8 +764,9 @@ const EditProfile = (props: any) => {
       )}
 
       {recordedURI && !recording && (
+        <View style={{padding:10,justifyContent:'center',display:'flex',alignItems:'center',flexDirection:'row'}}>
         <Slider
-          style={{ width: "100%", height: 40, marginTop: 10 }}
+          style={{ width: "100%", height: 40 }}
           minimumValue={0}
           disabled
           maximumValue={playbackStatus?.durationMillis || 0}
@@ -684,6 +777,8 @@ const EditProfile = (props: any) => {
             }
           }}
         />
+        <Text>{formatTime(playbackDuration)}</Text>
+        </View>
       )}
 
       {recordedURI && !recording && (
