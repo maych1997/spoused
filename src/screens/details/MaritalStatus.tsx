@@ -123,14 +123,8 @@ const MaritalStatus = (props: any) => {
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView style={{ padding: 10 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-          style={{ position: "absolute", left: 0 }}
-        />
         <Question
+          backHandler={backHandler}
           options={back === 2 ? maritalForFilter(maritalStatus) : removeAny(maritalStatus)}
           setSelected={setStatus}
           heading="What Is Your Marital Status"

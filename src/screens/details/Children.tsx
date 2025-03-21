@@ -109,14 +109,8 @@ const Children = (props: any) => {
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView style={{ padding: 10 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-          style={{ position: "absolute", left: 0 }}
-        />
         <Question
+          backHandler={backHandler}
           options={back === 2 ? ["No Preference", "Yes", "No", "Maybe"] : ["Yes", "No", "Maybe"]}
           setSelected={setValue}
           heading="Do You Want To Have Children?"

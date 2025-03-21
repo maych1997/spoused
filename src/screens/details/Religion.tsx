@@ -15,7 +15,6 @@ import { ScrollView } from "react-native-virtualized-view";
 import {Question} from "../onBoarding/components/Question";
 import { ethnicOrigin, religion } from "../../data/ProfileQuestions";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import CommonButton from "../../components/common/CommonButton";
 import OptionSelect from "../../components/common/OptionSelect";
@@ -134,16 +133,9 @@ const Religion = (props: any) => {
 
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
-    <Text>salam are you wrong?</Text>
       <ScrollView style={{ padding: 5 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-          style={{ position: "absolute", left: 0 }}
-        />
         <Question
+          backHandler={backHandler}
           data={{religion}}
           options={back === 2 ? religionForFilter(religion) : removeAny(religion)}
           setSelected={setSelectedReligion}

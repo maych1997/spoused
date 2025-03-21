@@ -100,13 +100,8 @@ const Gender = (props: any) => {
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
       <ScrollView style={{ padding: 15 }}>
-        <Ionicons
-          name="chevron-back"
-          size={34}
-          onPress={backHandler}
-          color="black"
-        />
         <Question
+          backHandler={backHandler}
           heading={back === 2 ? "Gender" : "What is your Gender"}
           subheading={back === 2 ? "Please Select the Gender" : "Please Select your Gender"}
           options={["Male", "Female", "Non-Binary"]}
