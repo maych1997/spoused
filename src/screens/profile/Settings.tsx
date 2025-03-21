@@ -26,7 +26,7 @@ import CommonButton from "../../components/common/CommonButton";
 import { FULL_HEIGHT } from "../../utility/Constant";
 import globalStyles from "../../styles/globalStyles";
 import { useDispatch, useSelector } from "react-redux";
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 import { logout, updatemyprofile } from "../../../redux/authSlice";
 import { getMyProfileApi } from "../../../api/ProfileCompletion/GetApis/getMyProfileApi";
 import { updateNotificationApi } from "../../../api/ProfileCompletion/PostApis/updateNotificationApi";
@@ -34,6 +34,7 @@ import { updateProfileSharingApi } from "../../../api/ProfileCompletion/PostApis
 import { updateBlurPhotoApi } from "../../../api/ProfileCompletion/PostApis/updateBlurPhotosApi";
 import { updateHideProfileApi } from "../../../api/ProfileCompletion/PostApis/updateHideProfileApi";
 import { removeFcmApi } from "../../../api/Auth/PostApis/removeFcmApi";
+import { useInfoModal } from "@/context/ModalContext";
 
 const Settings = (props: any) => {
   useFonts({
@@ -55,15 +56,15 @@ const Settings = (props: any) => {
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState({});
   const [fcm, setFcm] = useState<string | null>(null);
-
-
-
+  const { openModal } = useInfoModal();
   useEffect(() => {
     setProfileData(reduxState?.auth?.user?.myprofile);
     setToggleNotifications(reduxState?.auth?.user?.myprofile?.notifications);
     setToggleProfileSharing(reduxState?.auth?.user?.myprofile?.profilesharing);
     setToggleBlurPhotos(reduxState?.auth?.user?.myprofile?.photoPrivacy);
-    setToggleHideProfile(reduxState?.auth?.user?.myprofile?.hideprofile?.sharing);
+    setToggleHideProfile(
+      reduxState?.auth?.user?.myprofile?.hideprofile?.sharing
+    );
   }, [reduxState?.auth?.user?.myprofile]);
 
   const requestUserPermission = async () => {
@@ -80,9 +81,7 @@ const Settings = (props: any) => {
     if (requestUserPermission()) {
       messaging()
         .getToken()
-        .then(
-          token => setFcm(token)
-        );
+        .then((token) => setFcm(token));
     } else {
       return;
     }
@@ -105,7 +104,11 @@ const Settings = (props: any) => {
   const handleNotification = async () => {
     try {
       setToggleNotifications(!toggleNotifications);
-      const res = await updateNotificationApi(reduxState.auth.token, !toggleNotifications, fcm);
+      const res = await updateNotificationApi(
+        reduxState.auth.token,
+        !toggleNotifications,
+        fcm
+      );
 
       if (res.success) {
         dispatch(updatemyprofile(res.user));
@@ -113,12 +116,15 @@ const Settings = (props: any) => {
     } catch (error) {
       console.error("Error updating gold member:", error);
     }
-  }
+  };
 
   const handleProfileSharing = async () => {
     try {
       setToggleProfileSharing(!toggleProfileSharing);
-      const res = await updateProfileSharingApi(reduxState.auth.token, !toggleProfileSharing);
+      const res = await updateProfileSharingApi(
+        reduxState.auth.token,
+        !toggleProfileSharing
+      );
 
       if (res.success) {
         dispatch(updatemyprofile(res.user));
@@ -126,12 +132,15 @@ const Settings = (props: any) => {
     } catch (error) {
       console.error("Error updating gold member:", error);
     }
-  }
+  };
 
   const handleBlurPhotos = async () => {
     try {
       setToggleBlurPhotos(!toggleBlurPhotos);
-      const res = await updateBlurPhotoApi(reduxState.auth.token, !toggleBlurPhotos);
+      const res = await updateBlurPhotoApi(
+        reduxState.auth.token,
+        !toggleBlurPhotos
+      );
 
       if (res.success) {
         dispatch(updatemyprofile(res.user));
@@ -139,12 +148,15 @@ const Settings = (props: any) => {
     } catch (error) {
       console.error("Error updating gold member:", error);
     }
-  }
+  };
 
   const handleHideProfile = async () => {
     try {
       setToggleHideProfile(!toggleHideProfile);
-      const res = await updateHideProfileApi(reduxState.auth.token, !toggleHideProfile);
+      const res = await updateHideProfileApi(
+        reduxState.auth.token,
+        !toggleHideProfile
+      );
 
       if (res.success) {
         dispatch(updatemyprofile(res.user));
@@ -152,7 +164,7 @@ const Settings = (props: any) => {
     } catch (error) {
       console.error("Error updating gold member:", error);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={[styles.container, globalStyles.androidSafeArea]}>
@@ -263,7 +275,9 @@ const Settings = (props: any) => {
         <Filter
           title={"Restore Purchases"}
           content={"Restore your subscription"}
-          pressHandler={() => props.navigation.navigate("ManageSubscription")}
+          pressHandler={() => {if(reduxState?.auth?.user?.myprofile.proAccount==false){
+            openModal("Unable to Restore", "Your Account is Not Pro. You haven't subscribed", "OK", "error");
+          }}}
         />
 
         {/* privacy */}

@@ -26,6 +26,7 @@ import globalStyles from "../../styles/globalStyles";
 import { contactUsApi } from "../../../api/Auth/PostApis/contactUsApi";
 import { useSelector } from "react-redux";
 import { Button } from "@/ui";
+import { useInfoModal } from "@/context/ModalContext";
 
 const Contact = (props: any) => {
   useFonts({
@@ -41,6 +42,7 @@ const Contact = (props: any) => {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const { openModal } = useInfoModal(); 
   const reduxState = useSelector((state) => state);
 
   const handleSubmit = async () => {
@@ -51,7 +53,8 @@ const Contact = (props: any) => {
       console.log("//////////////////////////////")
       
       if (res.success) {
-        props.navigation.navigate("Profile")
+        openModal("Email Sent!", res?.message, "OK", "success");
+        props.navigation.navigate("Profile");
       }
     } catch (error) {
       console.log("Error in contact us", error);
